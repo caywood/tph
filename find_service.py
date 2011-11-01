@@ -100,7 +100,7 @@ def find_service(schedule, target_date, intervals, target_routes,
                  (trip.direction_id == 1 and not override_direction):
             count = results_temp[route_id]['count_1']
             headsigns = results_temp[route_id]['headsigns_1']
-            timelist = results_temp[route_id]['timelist_0']            
+            timelist = results_temp[route_id]['timelist_1']            
         else:
             raise Exception("No direction available for trip %s on route %s." % (trip.trip_id, route_id))
 

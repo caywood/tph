@@ -52,7 +52,7 @@ def stem_leaf_schedule(timelist_0, headsign_0, timelist_1 = [], headsign_1 = '',
 		sfile.write('<table><thead><tr><th>' + headsign_0 + '</th><th></th><th>' + headsign_1 + '</th></tr></thead><tbody>')
 		for i in schedule_to_write:
 			hh = hour_to_12_or_24(i)				
-			sfile.write('<tr><td>' + leftstrs[i] + '</td><td align="right">' + hh + '</td><td>' + rightstrs[i] + '</td></tr>')
+			sfile.write('<tr><td align="right">' + leftstrs[i] + '</td><td align="right">' + hh + '</td><td>' + rightstrs[i] + '</td></tr>')
 		sfile.write('</tbody></table>')
 		
 		sfile.write('</BODY></HTML>')

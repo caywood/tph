@@ -24,8 +24,8 @@ if config.has_option('config', 'gtfs_db'):
     gtfs_db_filename = config.get('config', 'gtfs_db')
 else:
     gtfs_db_filename = sys.argv[2]
-print 'Reading configuration file: ' + gtfs_db_filename
-schedule = Schedule(gtfs_db_filename, echo=True)
+print 'Reading GTFS database file: ' + gtfs_db_filename
+schedule = Schedule(gtfs_db_filename, echo=False)
 
 # TODO: currently specified intervals can't wrap around midnight -- allow this 
 if config.has_option('config','intervals'):
@@ -83,10 +83,12 @@ for section in config.sections():
 
         (headsigns_0, headsigns_1) = get_merged_headsigns(results)
 
-        spacingfile = config.get(section, 'spacingfile')
-        plot_spacing(spacingfile,intervals,spacing_0,worstspacing_0,", ".join(headsigns_0),spacing_1,worstspacing_1,", ".join(headsigns_1))
+        if config.has_option(section, 'spacingfile'):
+            spacingfile = config.get(section, 'spacingfile')
+            plot_spacing(spacingfile,intervals,spacing_0,worstspacing_0,", ".join(headsigns_0),spacing_1,worstspacing_1,", ".join(headsigns_1))
         
-        stemleaffile = config.get(section, 'stemleaffile')
-        stem_leaf_schedule(timelist_0,", ".join(headsigns_0),timelist_1,", ".join(headsigns_1),stemleaffile)
+        if config.has_option(section, 'stemleaffile'):
+            stemleaffile = config.get(section, 'stemleaffile')
+            stem_leaf_schedule(timelist_0,", ".join(headsigns_0),timelist_1,", ".join(headsigns_1),stemleaffile)
         
-        
+print('Done.')    

@@ -25,7 +25,7 @@ def plot_spacing(spacingfile,intervals,spacing_0,worstspacing_0,directionname_0,
 				spacingstr = str(int(spacing[i]))
 				if float(worstspacing[i]) / float(spacing[i]) > 1.25:
 					spacingstr = spacingstr + ' - ' + str(int(worstspacing[i]))
-					spacingstr = spacingstr + ' min'
+				spacingstr = spacingstr + ' min'
 			sfile.write('%s - %s ... %s\n' % (hour_to_time(intervals[i]), hour_to_time(intervals[i+1]), spacingstr))
 
 	sfile = open(spacingfile,'w')
