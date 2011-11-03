@@ -166,11 +166,16 @@ def find_service(schedule, target_date, intervals, target_routes,
         r['bins_0'] = [r['count_0'].get(x, 0) for x in range(len(intervals)-1)]
         r['bins_1'] = [r['count_1'].get(x, 0) for x in range(len(intervals)-1)]
 
+    # A 6:05 stop time with a next time of 6:25 is stored under the interval containing 6:05 --
+    # If the interval is 6-7, the idea is that between 6 and 7 your next bus wait time will be 20 minutes 
+    #
+    # If there are buses at 12:00 and 12:20, 12-1 should show as 20 minutes - infinity minutes
+    #
     # MSC eventually convert frequency routes to use the frequencies directly as intervals
     last_time = -1;
     for final_time in r['timelist_0']:
         if last_time != -1:
-            intervalidx = find_interval(intervals,final_time)
+            intervalidx = find_interval(intervals,last_time)
             if intervalidx != -1:
                 intervallist_0[intervalidx].append((final_time - last_time) / 60)
         last_time = final_time
@@ -182,7 +187,7 @@ def find_service(schedule, target_date, intervals, target_routes,
     last_time = -1;
     for final_time in r['timelist_1']:
         if last_time != -1:
-            intervalidx = find_interval(intervals,final_time)
+            intervalidx = find_interval(intervals,last_time)
             if intervalidx != -1:
                 intervallist_1[intervalidx].append((final_time - last_time) / 60)
         last_time = final_time
