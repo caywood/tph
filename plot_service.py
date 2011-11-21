@@ -155,4 +155,6 @@ def plot_service(results, target_stop_name, target_date, intervals, outfile):
 
     fig.text(0.05, 0.05, d0 + "\n" + d1, size="small")
 
+    print 'Writing TPH figure file: ' + outfile
     fig.savefig(outfile, format=fig_format)
+

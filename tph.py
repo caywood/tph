@@ -9,6 +9,7 @@ from plot_service import get_merged_headsigns
 from plot_service import plot_service
 from plot_spacing import plot_spacing
 from stem_leaf import stem_leaf_schedule
+from identify_service import identify_service_periods_from_timelist
 
 config = ConfigParser.ConfigParser()
 configfilename = sys.argv[1]
@@ -90,5 +91,7 @@ for section in config.sections():
         if config.has_option(section, 'stemleaffile'):
             stemleaffile = config.get(section, 'stemleaffile')
             stem_leaf_schedule(timelist_0,", ".join(headsigns_0),timelist_1,", ".join(headsigns_1),stemleaffile)
+        
+        identify_service_periods_from_timelist(timelist_1)
         
 print('Done.')    

@@ -6,57 +6,58 @@ day_start = 3 # 0 for midnight; 3 = 3 AM start
 trim_schedule = 1 # 
 time_12_hours = 1 # or 24
 
+def hour_to_12_or_24(h):
+	# convert hour number h to hour string e.g. ' 8 PM'
+	if time_12_hours:
+		hmod = h % 12
+		if hmod == 0: hmod = 12
+		hstr = pad(hmod,' ') + ' '
+		if h < 12: hstr = hstr + 'AM'
+		else: hstr = hstr + 'PM'
+	else:
+		hstr = pad(h,' ') 
+	return hstr
+
+def stem_leaf_tuple(data,modulo):
+	tuples = []
+	for d in sorted(data):
+		d = int(floor(d / 60.)) # first round to minutes
+		stm, lf = divmod(d,modulo)
+		stm = stm % 24 # wrap hours
+		tuples.append( (int(stm), int(lf)) )
+	return tuples
+
+def stem_leaf_write_to_file(leftstrs,rightstrs,schedule_to_write,headsign_0,headsign_1,leftlens,stemleaffile):
+	maxleftlen = max(leftlens)
+
+	sfile = open(stemleaffile,'w')
+	sfile.write(' '*(maxleftlen - len(headsign_0)) + headsign_0 + ' '*8 + headsign_1 + '\n')
+	for i in schedule_to_write:
+		hh = hour_to_12_or_24(i)				
+		sfile.write(' '*(maxleftlen - leftlens[i]) + leftstrs[i] + '|' + hh + '|' + rightstrs[i] + '\n')
+	sfile.close()
+	
+def stem_leaf_write_to_html(leftstrs,rightstrs,schedule_to_write,headsign_0,headsign_1,stemleaffile):
+	sfile = open(stemleaffile,'w')
+	sfile.write('<HTML><HEAD><TITLE>' + stemleaffile + '</TITLE>')
+
+	# write CSS
+	sfile.write('<STYLE type="text/css"> table { margin: 1em; border-collapse: collapse; } td, th { padding: .3em; border: 1px #ccc solid; } thead { background: #fc9; } </STYLE>')
+
+	sfile.write('</HEAD><BODY>')
+	
+	# write table
+	sfile.write('<table><thead><tr><th>' + headsign_0 + '</th><th></th><th>' + headsign_1 + '</th></tr></thead><tbody>')
+	for i in schedule_to_write:
+		hh = hour_to_12_or_24(i)				
+		sfile.write('<tr><td align="right">' + leftstrs[i] + '</td><td align="right">' + hh + '</td><td>' + rightstrs[i] + '</td></tr>')
+	sfile.write('</tbody></table>')
+	
+	sfile.write('</BODY></HTML>')
+	sfile.close()
+
+
 def stem_leaf_schedule(timelist_0, headsign_0, timelist_1 = [], headsign_1 = '', stemleaffile = ''):
-
-	def stem_leaf_tuple(data,modulo):
-		tuples = []
-		for d in sorted(data):
-			d = int(floor(d / 60.)) # first round to minutes
-			stm, lf = divmod(d,modulo)
-			stm = stm % 24 # wrap hours
-			tuples.append( (int(stm), int(lf)) )
-		return tuples
-
-	def hour_to_12_or_24(h):
-		# h is hour number
-		if time_12_hours:
-			hmod = h % 12
-			if hmod == 0: hmod = 12
-			hstr = pad(hmod,' ') + ' '
-			if h < 12: hstr = hstr + 'AM'
-			else: hstr = hstr + 'PM'
-		else:
-			hstr = pad(h,' ') 
-		return hstr
-
-	def stem_leaf_write_to_file(leftstrs,rightstrs,schedule_to_write,leftlens,stemleaffile):
-		maxleftlen = max(leftlens)
-
-		sfile = open(stemleaffile,'w')
-		sfile.write(' '*(maxleftlen - len(headsign_0)) + headsign_0 + ' '*8 + headsign_1 + '\n')
-		for i in schedule_to_write:
-			hh = hour_to_12_or_24(i)				
-			sfile.write(' '*(maxleftlen - leftlens[i]) + leftstrs[i] + '|' + hh + '|' + rightstrs[i] + '\n')
-		sfile.close()
-		
-	def stem_leaf_write_to_html(leftstrs,rightstrs,schedule_to_write,stemleaffile):
-		sfile = open(stemleaffile,'w')
-		sfile.write('<HTML><HEAD><TITLE>' + stemleaffile + '</TITLE>')
-
-		# write CSS
-		sfile.write('<STYLE type="text/css"> table { margin: 1em; border-collapse: collapse; } td, th { padding: .3em; border: 1px #ccc solid; } thead { background: #fc9; } </STYLE>')
-
-		sfile.write('</HEAD><BODY>')
-		
-		# write table
-		sfile.write('<table><thead><tr><th>' + headsign_0 + '</th><th></th><th>' + headsign_1 + '</th></tr></thead><tbody>')
-		for i in schedule_to_write:
-			hh = hour_to_12_or_24(i)				
-			sfile.write('<tr><td align="right">' + leftstrs[i] + '</td><td align="right">' + hh + '</td><td>' + rightstrs[i] + '</td></tr>')
-		sfile.write('</tbody></table>')
-		
-		sfile.write('</BODY></HTML>')
-		sfile.close()
 		
 	# init some structures
 	left_leaf = []
@@ -96,7 +97,7 @@ def stem_leaf_schedule(timelist_0, headsign_0, timelist_1 = [], headsign_1 = '',
 		rightlens.append(len(rightstrs[i]))
 
 	# move schedule up/down relative to day start
-	schedule_hours = range(0,24)
+	schedule_hours = range(24)
 	if day_start != 0:
 		schedule_hours = schedule_hours[day_start:] + schedule_hours[:day_start]
 	
@@ -112,6 +113,8 @@ def stem_leaf_schedule(timelist_0, headsign_0, timelist_1 = [], headsign_1 = '',
 	else:
 		schedule_to_write = schedule_hours
 	
-	stem_leaf_write_to_file(leftstrs,rightstrs,schedule_to_write,leftlens,stemleaffile + '.txt')
+	print 'Writing stem-leaf schedule file: ' + stemleaffile + '.txt'
+	stem_leaf_write_to_file(leftstrs,rightstrs,schedule_to_write,headsign_0,headsign_1,leftlens,stemleaffile + '.txt')
 
-	stem_leaf_write_to_html(leftstrs,rightstrs,schedule_to_write,stemleaffile + '.html')
+	print 'Writing stem-leaf schedule file: ' + stemleaffile + '.html'
+	stem_leaf_write_to_html(leftstrs,rightstrs,schedule_to_write,headsign_0,headsign_1,stemleaffile + '.html')
